@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: access-control-example
+  datasource:
+    url: jdbc:mysql://localhost:3306/laboratory
+    username: db_user
+    password: 123
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: true
