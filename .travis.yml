@@ -6,5 +6,6 @@ script:
 env:
   - SPRING_PROFILES_ACTIVE=travis
 before_install:
-  - mysql -e 'create database if not exists laboratory default character set utf8;'
+  - mysql -e "create database if not exists laboratory default character set utf8;"
   - mysql -e "use mysql; update user set authentication_string=PASSWORD('password') where User='root'; update user set plugin='mysql_native_password'; flush privileges;"
+  - mysql -u root -ppassword -e "show variables like '%version%';"
