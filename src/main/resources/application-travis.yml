@@ -2,7 +2,7 @@ spring:
   application:
     name: access-control-example
   datasource:
-    url: jdbc:mysql://localhost:3306/laboratory
+    url: jdbc:mysql://127.0.0.1:3306/laboratory
     username: root
   jpa:
     hibernate:
