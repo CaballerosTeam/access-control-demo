@@ -7,3 +7,4 @@ env:
   - SPRING_PROFILES_ACTIVE=travis
 before_install:
   - mysql -e 'CREATE DATABASE IF NOT EXISTS laboratory DEFAULT CHARACTER SET utf8;'
+  - mysql -e 'ALTER USER 'root'@'localhost' IDENTIFIED BY 'travis';'
