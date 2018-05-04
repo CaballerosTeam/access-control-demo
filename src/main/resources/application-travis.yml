@@ -4,7 +4,7 @@ spring:
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/laboratory
     username: root
-    password: travis
+    password: password
   jpa:
     hibernate:
       ddl-auto: create-drop
