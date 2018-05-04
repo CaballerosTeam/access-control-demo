@@ -4,7 +4,5 @@ services: mysql
 script:
   - ./gradlew check --info
 before_install:
-  - pwd
-  - ls -la
-  - mysql < CaballerosTeam/access-control-demo/init.sql
+  - mysql < init.sql
   - mysql -udb_user -pdb_password -e "SHOW DATABASES;"
