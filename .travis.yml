@@ -4,7 +4,5 @@ services: mysql
 script:
   - ./gradlew check --info
 before_install:
-  - mysql -e "CREATE DATABASE IF NOT EXISTS laboratory DEFAULT CHARACTER SET utf8;"
-  - mysql -e "CREATE USER 'db_user'@'localhost' IDENTIFIED BY 'db_password';"
-  - mysql -e "GRANT ALL laboratory.* TO 'db_user'@'localhost';"
+  - mysql < CaballerosTeam/access-control-demo/init.sql
   - mysql -udb_user -pdb_password -e "SHOW DATABASES;"
