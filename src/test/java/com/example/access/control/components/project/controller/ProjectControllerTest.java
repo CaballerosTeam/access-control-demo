@@ -19,9 +19,7 @@ import static com.example.access.control.TestHelper.prepareRequest;
 import static com.example.access.control.components.project.maker.ProjectMaker.PROJECT;
 import static com.natpryce.makeiteasy.MakeItEasy.a;
 import static com.natpryce.makeiteasy.MakeItEasy.make;
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_NO_CONTENT;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -104,6 +102,15 @@ public class ProjectControllerTest {
 
         Project actualProject = projectService.get(project.getId());
         assertEquals("Looks like a project was not updated", project, actualProject);
+    }
+
+    @Test
+    public void update_forbidden() {
+
+        prepareRequest(simpleUserName, project)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .put(baseUrl);
     }
 
     @Test

@@ -19,9 +19,7 @@ import static com.example.access.control.TestHelper.prepareRequest;
 import static com.example.access.control.components.person.maker.PersonMaker.PERSON;
 import static com.natpryce.makeiteasy.MakeItEasy.a;
 import static com.natpryce.makeiteasy.MakeItEasy.make;
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_NO_CONTENT;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -95,6 +93,20 @@ public class PersonControllerTest {
     }
 
     @Test
+    public void create_forbidden() {
+
+        Person newPerson = Person.builder()
+                .name("Darth Vader")
+                .email("d.h@example.com")
+                .build();
+
+        prepareRequest(simpleUserName, newPerson)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .post(baseUrl);
+    }
+
+    @Test
     public void update() {
 
         String newEmail = "homer.s@example.com";
@@ -119,5 +131,14 @@ public class PersonControllerTest {
 
         Set<Person> people = personService.getAll();
         assertThat("Looks like a person was not removed", people, not(hasItem(person)));
+    }
+
+    @Test
+    public void delete_forbidden() {
+
+        prepareRequest(simpleUserName)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .delete(baseUrl + "/" + person.getId());
     }
 }
