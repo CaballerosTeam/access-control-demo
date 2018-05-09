@@ -10,26 +10,25 @@ import static com.jayway.restassured.RestAssured.given;
 
 public class TestHelper {
 
-    private static final String USER_NAME = "user";
     private static final String USER_PASS = "123";
     private static final String LOGIN_URL = "/login";
 
-    public static Response getRequest(String url) {
+    public static Response getRequest(String userName, String url) {
 
-        return givenApi()
+        return givenApi(userName)
                 .when()
                 .get(url);
     }
 
-    public static ResponseSpecification prepareRequest() {
-        return prepareRequest(null);
+    public static ResponseSpecification prepareRequest(String userName) {
+        return prepareRequest(userName,null);
     }
 
-    public static ResponseSpecification prepareRequest(Object body) {
+    public static ResponseSpecification prepareRequest(String userName, Object body) {
 
         RequestSpecification requestSpecification = given()
                 .contentType(ContentType.JSON)
-                .filter(getSessionFilter());
+                .filter(getSessionFilter(userName));
 
         if (body != null) {
             requestSpecification.body(body);
@@ -38,10 +37,10 @@ public class TestHelper {
         return requestSpecification.expect();
     }
 
-    private static SessionFilter getSessionFilter() {
+    private static SessionFilter getSessionFilter(String userName) {
         SessionFilter sessionFilter = new SessionFilter();
 
-        givenApi()
+        givenApi(userName)
                 .filter(sessionFilter)
                 .when()
                 .get(LOGIN_URL);
@@ -49,10 +48,10 @@ public class TestHelper {
         return sessionFilter;
     }
 
-    private static RequestSpecification givenApi() {
+    private static RequestSpecification givenApi(String userName) {
 
         return given()
                 .contentType(ContentType.JSON)
-                .auth().basic(USER_NAME, USER_PASS);
+                .auth().basic(userName, USER_PASS);
     }
 }

@@ -4,7 +4,9 @@ import com.example.access.control.components.core.service.CrudService;
 import com.example.access.control.components.person.domain.Person;
 import com.example.access.control.components.person.repo.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.Set;
@@ -33,6 +35,8 @@ public class PersonService implements CrudService<Person> {
     }
 
     @Override
+    @Transactional
+    @PostAuthorize("hasPermission(returnObject, 'create')")
     public Person create(Person person) {
 
         if (person.getId() != null) {
@@ -43,6 +47,8 @@ public class PersonService implements CrudService<Person> {
     }
 
     @Override
+    @Transactional
+    @PostAuthorize("hasPermission(returnObject, 'update')")
     public Person update(Person person) {
 
         Long personId = person.getId();
@@ -54,12 +60,8 @@ public class PersonService implements CrudService<Person> {
     }
 
     @Override
-    public boolean exists(Long personId) {
-
-        return personRepository.existsById(personId);
-    }
-
-    @Override
+    @Transactional
+    @PostAuthorize("hasPermission(#personId, 'Person', 'delete')")
     public void remove(Long personId) {
 
         if (!exists(personId)) {
@@ -67,5 +69,11 @@ public class PersonService implements CrudService<Person> {
         }
 
         personRepository.deleteById(personId);
+    }
+
+    @Override
+    public boolean exists(Long personId) {
+
+        return personRepository.existsById(personId);
     }
 }

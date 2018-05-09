@@ -44,6 +44,8 @@ public class PersonControllerTest {
 
     private Person person;
     private final String baseUrl = "/v1/person";
+    private final String simpleUserName = "user";
+    private final String superUserName = "superuser";
 
     @Before
     @SuppressWarnings("unchecked")
@@ -57,7 +59,7 @@ public class PersonControllerTest {
     @Test
     public void getAll() {
 
-        getRequest(baseUrl)
+        getRequest(simpleUserName, baseUrl)
                 .then()
                 .statusCode(SC_OK)
                 .body("collect { it.email }", hasItem(person.getEmail()));
@@ -66,7 +68,7 @@ public class PersonControllerTest {
     @Test
     public void get() {
 
-        getRequest(baseUrl + "/" + person.getId())
+        getRequest(simpleUserName,baseUrl + "/" + person.getId())
                 .then()
                 .statusCode(SC_OK)
                 .body("email", equalTo(person.getEmail()))
@@ -83,7 +85,7 @@ public class PersonControllerTest {
                 .email(personEmail)
                 .build();
 
-        prepareRequest(newPerson)
+        prepareRequest(superUserName, newPerson)
                 .statusCode(SC_CREATED)
                 .when()
                 .post(baseUrl);
@@ -98,7 +100,7 @@ public class PersonControllerTest {
         String newEmail = "homer.s@example.com";
         person.setEmail(newEmail);
 
-        prepareRequest(person)
+        prepareRequest(superUserName, person)
                 .statusCode(SC_NO_CONTENT)
                 .when()
                 .put(baseUrl);
@@ -110,7 +112,7 @@ public class PersonControllerTest {
     @Test
     public void delete() {
 
-        prepareRequest()
+        prepareRequest(superUserName)
                 .statusCode(SC_NO_CONTENT)
                 .when()
                 .delete(baseUrl + "/" + person.getId());

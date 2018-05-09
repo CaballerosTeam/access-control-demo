@@ -44,6 +44,8 @@ public class ProjectControllerTest {
 
     private Project project;
     private String baseUrl = "/v1/project";
+    private final String simpleUserName = "user";
+    private final String superUserName = "superuser";
 
     @Before
     @SuppressWarnings("unchecked")
@@ -57,7 +59,7 @@ public class ProjectControllerTest {
     @Test
     public void getAll() {
 
-        getRequest(baseUrl)
+        getRequest(simpleUserName, baseUrl)
                 .then()
                 .statusCode(SC_OK)
                 .body("collect { it.title }", hasItem(project.getTitle()));
@@ -66,7 +68,7 @@ public class ProjectControllerTest {
     @Test
     public void get() {
 
-        getRequest(baseUrl + "/" + project.getId())
+        getRequest(simpleUserName, baseUrl + "/" + project.getId())
                 .then()
                 .statusCode(SC_OK)
                 .body("title", equalTo(project.getTitle()));
@@ -80,7 +82,7 @@ public class ProjectControllerTest {
                 .title(projectTitle)
                 .build();
 
-        prepareRequest(newProject)
+        prepareRequest(superUserName, newProject)
                 .statusCode(SC_CREATED)
                 .when()
                 .post(baseUrl);
@@ -95,7 +97,7 @@ public class ProjectControllerTest {
         String newTitle = "Death Star";
         project.setTitle(newTitle);
 
-        prepareRequest(project)
+        prepareRequest(superUserName, project)
                 .statusCode(SC_NO_CONTENT)
                 .when()
                 .put(baseUrl);
@@ -107,7 +109,7 @@ public class ProjectControllerTest {
     @Test
     public void delete() {
 
-        prepareRequest()
+        prepareRequest(superUserName)
                 .statusCode(SC_NO_CONTENT)
                 .when()
                 .delete(baseUrl + "/" + project.getId());

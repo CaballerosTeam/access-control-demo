@@ -3,7 +3,9 @@ package com.example.access.control.components.project.service;
 import com.example.access.control.components.core.service.CrudService;
 import com.example.access.control.components.project.domain.Project;
 import com.example.access.control.components.project.repo.ProjectRepository;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.constraints.NotNull;
 import java.util.Set;
@@ -31,6 +33,8 @@ public class ProjectService implements CrudService<Project> {
     }
 
     @Override
+    @Transactional
+    @PostAuthorize("hasPermission(returnObject, 'create')")
     public Project create(@NotNull Project project) {
 
         Long projectId = project.getId();
@@ -42,6 +46,8 @@ public class ProjectService implements CrudService<Project> {
     }
 
     @Override
+    @Transactional
+    @PostAuthorize("hasPermission(returnObject, 'update')")
     public Project update(@NotNull Project project) {
 
         Long projectId = project.getId();
@@ -53,12 +59,8 @@ public class ProjectService implements CrudService<Project> {
     }
 
     @Override
-    public boolean exists(Long projectId) {
-
-        return projectRepository.existsById(projectId);
-    }
-
-    @Override
+    @Transactional
+    @PostAuthorize("hasPermission(#projectId, 'Project', 'delete')")
     public void remove(Long projectId) {
 
         if (!exists(projectId)) {
@@ -66,5 +68,11 @@ public class ProjectService implements CrudService<Project> {
         }
 
         projectRepository.deleteById(projectId);
+    }
+
+    @Override
+    public boolean exists(Long projectId) {
+
+        return projectRepository.existsById(projectId);
     }
 }
