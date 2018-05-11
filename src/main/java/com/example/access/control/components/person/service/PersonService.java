@@ -3,6 +3,7 @@ package com.example.access.control.components.person.service;
 import com.example.access.control.components.core.service.CrudService;
 import com.example.access.control.components.person.domain.Person;
 import com.example.access.control.components.person.repo.PersonRepository;
+import com.example.access.control.components.auth.annotations.CreatePermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
@@ -36,7 +37,7 @@ public class PersonService implements CrudService<Person> {
 
     @Override
     @Transactional
-    @PostAuthorize("hasPermission(returnObject, 'create')")
+    @CreatePermission
     public Person create(Person person) {
 
         if (person.getId() != null) {
