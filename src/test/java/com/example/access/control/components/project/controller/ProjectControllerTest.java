@@ -14,8 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
-import static com.example.access.control.TestHelper.getRequest;
-import static com.example.access.control.TestHelper.prepareRequest;
+import static com.example.access.control.TestHelper.*;
 import static com.example.access.control.components.project.maker.ProjectMaker.PROJECT;
 import static com.natpryce.makeiteasy.MakeItEasy.a;
 import static com.natpryce.makeiteasy.MakeItEasy.make;
@@ -42,8 +41,6 @@ public class ProjectControllerTest {
 
     private Project project;
     private String baseUrl = "/v1/project";
-    private final String simpleUserName = "user";
-    private final String superUserName = "superuser";
 
     @Before
     @SuppressWarnings("unchecked")
@@ -57,7 +54,7 @@ public class ProjectControllerTest {
     @Test
     public void getAll() {
 
-        getRequest(simpleUserName, baseUrl)
+        getRequest(SIMPLE_USER_NAME, baseUrl)
                 .then()
                 .statusCode(SC_OK)
                 .body("collect { it.title }", hasItem(project.getTitle()));
@@ -66,7 +63,7 @@ public class ProjectControllerTest {
     @Test
     public void get() {
 
-        getRequest(simpleUserName, baseUrl + "/" + project.getId())
+        getRequest(SIMPLE_USER_NAME, baseUrl + "/" + project.getId())
                 .then()
                 .statusCode(SC_OK)
                 .body("title", equalTo(project.getTitle()));
@@ -80,7 +77,7 @@ public class ProjectControllerTest {
                 .title(projectTitle)
                 .build();
 
-        prepareRequest(superUserName, newProject)
+        prepareRequest(CREATE_USER_NAME, newProject)
                 .statusCode(SC_CREATED)
                 .when()
                 .post(baseUrl);
@@ -95,7 +92,7 @@ public class ProjectControllerTest {
         String newTitle = "Death Star";
         project.setTitle(newTitle);
 
-        prepareRequest(superUserName, project)
+        prepareRequest(UPDATE_USER_NAME, project)
                 .statusCode(SC_NO_CONTENT)
                 .when()
                 .put(baseUrl);
@@ -107,16 +104,32 @@ public class ProjectControllerTest {
     @Test
     public void update_forbidden() {
 
-        prepareRequest(simpleUserName, project)
+        String newTitle = "Manhattan";
+        project.setTitle(newTitle);
+
+        prepareRequest(SIMPLE_USER_NAME, project)
                 .statusCode(SC_FORBIDDEN)
                 .when()
                 .put(baseUrl);
+
+        prepareRequest(CREATE_USER_NAME, project)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .put(baseUrl);
+
+        prepareRequest(DELETE_USER_NAME, project)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .put(baseUrl);
+
+        Set<Project> projects = projectService.getAll();
+        assertThat("Looks like a project was updated", projects, not(hasItem(project)));
     }
 
     @Test
     public void delete() {
 
-        prepareRequest(superUserName)
+        prepareRequest(DELETE_USER_NAME)
                 .statusCode(SC_NO_CONTENT)
                 .when()
                 .delete(baseUrl + "/" + project.getId());

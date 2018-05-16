@@ -10,6 +10,11 @@ import static com.jayway.restassured.RestAssured.given;
 
 public class TestHelper {
 
+    public static final String SIMPLE_USER_NAME = "user";
+    public static final String CREATE_USER_NAME = "createUser";
+    public static final String UPDATE_USER_NAME = "updateUser";
+    public static final String DELETE_USER_NAME = "deleteUser";
+    public static final String SUPERUSER_NAME = "superuser";
     private static final String USER_PASS = "123";
     private static final String LOGIN_URL = "/login";
 

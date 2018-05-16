@@ -14,8 +14,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
 
-import static com.example.access.control.TestHelper.getRequest;
-import static com.example.access.control.TestHelper.prepareRequest;
+import static com.example.access.control.TestHelper.*;
 import static com.example.access.control.components.person.maker.PersonMaker.PERSON;
 import static com.natpryce.makeiteasy.MakeItEasy.a;
 import static com.natpryce.makeiteasy.MakeItEasy.make;
@@ -42,8 +41,6 @@ public class PersonControllerTest {
 
     private Person person;
     private final String baseUrl = "/v1/person";
-    private final String simpleUserName = "user";
-    private final String superUserName = "superuser";
 
     @Before
     @SuppressWarnings("unchecked")
@@ -57,7 +54,7 @@ public class PersonControllerTest {
     @Test
     public void getAll() {
 
-        getRequest(simpleUserName, baseUrl)
+        getRequest(SIMPLE_USER_NAME, baseUrl)
                 .then()
                 .statusCode(SC_OK)
                 .body("collect { it.email }", hasItem(person.getEmail()));
@@ -66,7 +63,7 @@ public class PersonControllerTest {
     @Test
     public void get() {
 
-        getRequest(simpleUserName,baseUrl + "/" + person.getId())
+        getRequest(SIMPLE_USER_NAME,baseUrl + "/" + person.getId())
                 .then()
                 .statusCode(SC_OK)
                 .body("email", equalTo(person.getEmail()))
@@ -83,7 +80,7 @@ public class PersonControllerTest {
                 .email(personEmail)
                 .build();
 
-        prepareRequest(superUserName, newPerson)
+        prepareRequest(CREATE_USER_NAME, newPerson)
                 .statusCode(SC_CREATED)
                 .when()
                 .post(baseUrl);
@@ -100,10 +97,23 @@ public class PersonControllerTest {
                 .email("d.h@example.com")
                 .build();
 
-        prepareRequest(simpleUserName, newPerson)
+        prepareRequest(SIMPLE_USER_NAME, newPerson)
                 .statusCode(SC_FORBIDDEN)
                 .when()
                 .post(baseUrl);
+
+        prepareRequest(UPDATE_USER_NAME, newPerson)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .post(baseUrl);
+
+        prepareRequest(DELETE_USER_NAME, newPerson)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .post(baseUrl);
+
+        Set<Person> people = personService.getAll();
+        assertThat("Looks like a person was created", people, not(hasItem(newPerson)));
     }
 
     @Test
@@ -112,7 +122,7 @@ public class PersonControllerTest {
         String newEmail = "homer.s@example.com";
         person.setEmail(newEmail);
 
-        prepareRequest(superUserName, person)
+        prepareRequest(UPDATE_USER_NAME, person)
                 .statusCode(SC_NO_CONTENT)
                 .when()
                 .put(baseUrl);
@@ -124,7 +134,7 @@ public class PersonControllerTest {
     @Test
     public void delete() {
 
-        prepareRequest(superUserName)
+        prepareRequest(DELETE_USER_NAME)
                 .statusCode(SC_NO_CONTENT)
                 .when()
                 .delete(baseUrl + "/" + person.getId());
@@ -136,9 +146,21 @@ public class PersonControllerTest {
     @Test
     public void delete_forbidden() {
 
-        prepareRequest(simpleUserName)
+        String url = baseUrl + "/" + person.getId();
+
+        prepareRequest(SIMPLE_USER_NAME)
                 .statusCode(SC_FORBIDDEN)
                 .when()
-                .delete(baseUrl + "/" + person.getId());
+                .delete(url);
+
+        prepareRequest(CREATE_USER_NAME)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .delete(url);
+
+        prepareRequest(UPDATE_USER_NAME)
+                .statusCode(SC_FORBIDDEN)
+                .when()
+                .delete(url);
     }
 }

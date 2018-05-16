@@ -20,6 +20,10 @@ public class SystemUserDetailsService implements UserDetailsService {
 
         String simpleUserName = "user";
         String superUserName = "superuser";
+        String createUserName = "createUser";
+        String updateUserName = "updateUser";
+        String deleteUserName = "deleteUser";
+        String password = "123";
 
         if (userName != null) {
             SystemUserDetails result = null;
@@ -27,7 +31,43 @@ public class SystemUserDetailsService implements UserDetailsService {
             if (userName.equals(simpleUserName)) {
                 result = SystemUserDetails.builder()
                         .userName(simpleUserName)
-                        .password("123")
+                        .password(password)
+                        .build();
+            }
+            else if (userName.equals(createUserName)) {
+                Set<GrantedAuthority> authorities = new HashSet<>(Arrays.asList(
+                        new SimpleGrantedAuthority("create_project"),
+                        new SimpleGrantedAuthority("create_person")
+                ));
+
+                result = SystemUserDetails.builder()
+                        .userName(createUserName)
+                        .password(password)
+                        .authorities(authorities)
+                        .build();
+            }
+            else if (userName.equals(updateUserName)) {
+                Set<GrantedAuthority> authorities = new HashSet<>(Arrays.asList(
+                        new SimpleGrantedAuthority("update_project"),
+                        new SimpleGrantedAuthority("update_person")
+                ));
+
+                result = SystemUserDetails.builder()
+                        .userName(updateUserName)
+                        .password(password)
+                        .authorities(authorities)
+                        .build();
+            }
+            else if (userName.equals(deleteUserName)) {
+                Set<GrantedAuthority> authorities = new HashSet<>(Arrays.asList(
+                        new SimpleGrantedAuthority("delete_project"),
+                        new SimpleGrantedAuthority("delete_person")
+                ));
+
+                result = SystemUserDetails.builder()
+                        .userName(deleteUserName)
+                        .password(password)
+                        .authorities(authorities)
                         .build();
             }
             else if (userName.equals(superUserName)) {
@@ -42,7 +82,7 @@ public class SystemUserDetailsService implements UserDetailsService {
 
                 result = SystemUserDetails.builder()
                         .userName(superUserName)
-                        .password("123")
+                        .password(password)
                         .authorities(authorities)
                         .build();
             }

@@ -1,11 +1,12 @@
 package com.example.access.control.components.person.service;
 
+import com.example.access.control.components.auth.annotations.person.CreatePersonPermission;
+import com.example.access.control.components.auth.annotations.person.DeletePersonPermission;
+import com.example.access.control.components.auth.annotations.person.UpdatePersonPermission;
 import com.example.access.control.components.core.service.CrudService;
 import com.example.access.control.components.person.domain.Person;
 import com.example.access.control.components.person.repo.PersonRepository;
-import com.example.access.control.components.auth.annotations.CreatePermission;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ public class PersonService implements CrudService<Person> {
 
     @Override
     @Transactional
-    @CreatePermission
+    @CreatePersonPermission
     public Person create(Person person) {
 
         if (person.getId() != null) {
@@ -49,7 +50,7 @@ public class PersonService implements CrudService<Person> {
 
     @Override
     @Transactional
-    @PostAuthorize("hasPermission(returnObject, 'update')")
+    @UpdatePersonPermission
     public Person update(Person person) {
 
         Long personId = person.getId();
@@ -62,7 +63,7 @@ public class PersonService implements CrudService<Person> {
 
     @Override
     @Transactional
-    @PostAuthorize("hasPermission(#personId, 'Person', 'delete')")
+    @DeletePersonPermission
     public void remove(Long personId) {
 
         if (!exists(personId)) {

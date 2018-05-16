@@ -1,9 +1,11 @@
 package com.example.access.control.components.project.service;
 
+import com.example.access.control.components.auth.annotations.project.CreateProjectPermission;
+import com.example.access.control.components.auth.annotations.project.DeleteProjectPermission;
+import com.example.access.control.components.auth.annotations.project.UpdateProjectPermission;
 import com.example.access.control.components.core.service.CrudService;
 import com.example.access.control.components.project.domain.Project;
 import com.example.access.control.components.project.repo.ProjectRepository;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +36,7 @@ public class ProjectService implements CrudService<Project> {
 
     @Override
     @Transactional
-    @PostAuthorize("hasPermission(returnObject, 'create')")
+    @CreateProjectPermission
     public Project create(@NotNull Project project) {
 
         Long projectId = project.getId();
@@ -47,7 +49,7 @@ public class ProjectService implements CrudService<Project> {
 
     @Override
     @Transactional
-    @PostAuthorize("hasPermission(returnObject, 'update')")
+    @UpdateProjectPermission
     public Project update(@NotNull Project project) {
 
         Long projectId = project.getId();
@@ -60,7 +62,7 @@ public class ProjectService implements CrudService<Project> {
 
     @Override
     @Transactional
-    @PostAuthorize("hasPermission(#projectId, 'Project', 'delete')")
+    @DeleteProjectPermission
     public void remove(Long projectId) {
 
         if (!exists(projectId)) {
