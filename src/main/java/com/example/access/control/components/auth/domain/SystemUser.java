@@ -1,20 +1,41 @@
 package com.example.access.control.components.auth.domain;
 
-import lombok.Builder;
-import org.springframework.security.core.GrantedAuthority;
+import lombok.*;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
+@Data
+@Entity
 @Builder
-public class SystemUserDetails implements UserDetails {
+@ToString(of = "userName")
+@NoArgsConstructor
+@AllArgsConstructor
+public class SystemUser implements UserDetails {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotNull
+    @NotBlank
     private String userName;
+
+    @NotNull
+    @NotBlank
     private String password;
-    private Collection<? extends GrantedAuthority> authorities;
+
+    @NotNull
+    private boolean isEnabled;
+
+    @OneToMany(mappedBy = "systemUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Collection<SystemUserAuthority> authorities;
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
+    public Collection<SystemUserAuthority> getAuthorities() {
         return authorities;
     }
 
@@ -45,6 +66,6 @@ public class SystemUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return isEnabled;
     }
 }

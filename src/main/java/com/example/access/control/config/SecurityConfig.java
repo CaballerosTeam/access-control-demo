@@ -2,7 +2,6 @@ package com.example.access.control.config;
 
 import com.example.access.control.components.auth.service.SystemUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.PayloadApplicationEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;

@@ -1,6 +1,11 @@
 package com.example.access.control.components.person.controller;
 
 import com.example.access.control.AccessControlDemoApplication;
+import com.example.access.control.components.auth.domain.ContentType;
+import com.example.access.control.components.auth.domain.Permission;
+import com.example.access.control.components.auth.domain.SystemUser;
+import com.example.access.control.components.auth.domain.SystemUserAuthority;
+import com.example.access.control.components.auth.service.SystemUserDetailsService;
 import com.example.access.control.components.person.domain.Person;
 import com.example.access.control.components.person.service.PersonService;
 import com.jayway.restassured.RestAssured;
@@ -10,20 +15,24 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.example.access.control.TestHelper.*;
 import static com.example.access.control.components.person.maker.PersonMaker.PERSON;
 import static com.natpryce.makeiteasy.MakeItEasy.a;
 import static com.natpryce.makeiteasy.MakeItEasy.make;
+import static junit.framework.TestCase.assertEquals;
 import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.hasItem;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.not;
-import static org.springframework.test.util.AssertionErrors.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(
@@ -31,6 +40,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
         classes = AccessControlDemoApplication.class,
         properties = "spring.config.name=application"
 )
+@ActiveProfiles("test")
 public class PersonControllerTest {
 
     @LocalServerPort
@@ -38,6 +48,9 @@ public class PersonControllerTest {
 
     @Autowired
     PersonService personService;
+
+    @Autowired
+    SystemUserDetailsService systemUserDetailsService;
 
     private Person person;
     private final String baseUrl = "/v1/person";
@@ -162,5 +175,31 @@ public class PersonControllerTest {
                 .statusCode(SC_FORBIDDEN)
                 .when()
                 .delete(url);
+    }
+
+    @Test
+    public void bla() {
+
+        SystemUser user = SystemUser.builder()
+                .userName("Homer")
+                .password("123")
+                .isEnabled(true)
+                .build();
+
+        List<SystemUserAuthority> authorities = Stream.of(ContentType.PERSON, ContentType.PROJECT)
+                .map(i -> SystemUserAuthority.builder()
+                        .systemUser(user)
+                        .contentType(i)
+                        .permission(Permission.CREATE)
+                        .build())
+                .collect(Collectors.toList());
+
+        user.setAuthorities(authorities);
+
+        systemUserDetailsService.create(user);
+
+        getRequest("Homer", "/v1/person")
+                .then()
+                .statusCode(SC_OK);
     }
 }

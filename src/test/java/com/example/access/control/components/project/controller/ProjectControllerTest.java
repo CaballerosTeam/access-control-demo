@@ -10,6 +10,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Set;
@@ -31,6 +32,7 @@ import static org.springframework.test.util.AssertionErrors.assertEquals;
         classes = AccessControlDemoApplication.class,
         properties = "spring.config.name=application"
 )
+@ActiveProfiles("test")
 public class ProjectControllerTest {
 
     @LocalServerPort
