@@ -1,5 +1,6 @@
 package com.example.access.control.components.auth.evaluators;
 
+import com.example.access.control.components.auth.domain.SystemUser;
 import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -31,6 +32,9 @@ public class DomainBasedPermissionEvaluator implements PermissionEvaluator {
     }
 
     boolean hasPrivilege(Authentication authentication, String targetType, Object permission) {
+
+        SystemUser principal = (SystemUser) authentication.getPrincipal();
+        if (principal != null && principal.isSuperuser()) return true;
 
         String format = "%s_%s";
         String expectedAuthority = String.format(format, permission, targetType);

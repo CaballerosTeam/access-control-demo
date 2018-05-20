@@ -29,7 +29,12 @@ public class SystemUser implements UserDetails {
     private String password;
 
     @NotNull
+    @NotBlank
     private boolean isEnabled;
+
+    @NotNull
+    @NotBlank
+    private boolean isSuperuser;
 
     @OneToMany(mappedBy = "systemUser", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Collection<SystemUserAuthority> authorities;

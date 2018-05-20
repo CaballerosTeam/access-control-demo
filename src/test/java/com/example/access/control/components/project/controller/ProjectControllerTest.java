@@ -129,6 +129,21 @@ public class ProjectControllerTest {
     }
 
     @Test
+    public void update_superuser() {
+
+        String newTitle = "Runway";
+        project.setTitle(newTitle);
+
+        prepareRequest(SUPERUSER_NAME, project)
+                .statusCode(SC_NO_CONTENT)
+                .when()
+                .put(baseUrl);
+
+        Project actualProject = projectService.get(project.getId());
+        assertEquals("Looks like a project was not updated", project, actualProject);
+    }
+
+    @Test
     public void delete() {
 
         prepareRequest(DELETE_USER_NAME)

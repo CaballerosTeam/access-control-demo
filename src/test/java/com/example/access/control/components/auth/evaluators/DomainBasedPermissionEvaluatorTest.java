@@ -1,5 +1,7 @@
 package com.example.access.control.components.auth.evaluators;
 
+import com.example.access.control.components.auth.domain.Permission;
+import com.example.access.control.components.auth.domain.SystemUser;
 import com.example.access.control.components.person.domain.Person;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,8 +27,7 @@ public class DomainBasedPermissionEvaluatorTest {
     private DomainBasedPermissionEvaluator permissionEvaluator;
     private final Object targetType = new Person();
     private final String targetTypeName = targetType.getClass().getSimpleName();
-    private final String updatePermission = "update";
-
+    private final String updatePermission = Permission.UPDATE.getKey();
 
     @Before
     public void setUp() {
@@ -57,6 +58,20 @@ public class DomainBasedPermissionEvaluatorTest {
 
         verify(permissionEvaluator).hasPrivilege(authentication, targetTypeName, updatePermission);
         assertTrue(actual);
+    }
+
+    @Test
+    public void hasPrivilege_superuser() {
+
+        SystemUser mockUser = mock(SystemUser.class);
+        when(mockUser.isSuperuser()).thenReturn(true);
+
+        when(authentication.getPrincipal()).thenReturn(mockUser);
+
+        boolean actual = permissionEvaluator.hasPrivilege(authentication, targetTypeName, updatePermission);
+
+        assertTrue(actual);
+        verify(authentication, never()).getAuthorities();
     }
 
     @Test

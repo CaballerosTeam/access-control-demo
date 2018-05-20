@@ -103,6 +103,25 @@ public class PersonControllerTest {
     }
 
     @Test
+    public void create_superuser() {
+
+        String personName = "Philip Fry";
+        String personEmail = "fry@futurama.com";
+        Person newPerson = Person.builder()
+                .name(personName)
+                .email(personEmail)
+                .build();
+
+        prepareRequest(SUPERUSER_NAME, newPerson)
+                .statusCode(SC_CREATED)
+                .when()
+                .post(baseUrl);
+
+        Set<Person> people = personService.getAll();
+        assertThat("Looks like a person was not created", people, hasItem(newPerson));
+    }
+
+    @Test
     public void create_forbidden() {
 
         Person newPerson = Person.builder()
@@ -178,28 +197,14 @@ public class PersonControllerTest {
     }
 
     @Test
-    public void bla() {
+    public void delete_superuser() {
 
-        SystemUser user = SystemUser.builder()
-                .userName("Homer")
-                .password("123")
-                .isEnabled(true)
-                .build();
+        prepareRequest(SUPERUSER_NAME)
+                .statusCode(SC_NO_CONTENT)
+                .when()
+                .delete(baseUrl + "/" + person.getId());
 
-        List<SystemUserAuthority> authorities = Stream.of(ContentType.PERSON, ContentType.PROJECT)
-                .map(i -> SystemUserAuthority.builder()
-                        .systemUser(user)
-                        .contentType(i)
-                        .permission(Permission.CREATE)
-                        .build())
-                .collect(Collectors.toList());
-
-        user.setAuthorities(authorities);
-
-        systemUserDetailsService.create(user);
-
-        getRequest("Homer", "/v1/person")
-                .then()
-                .statusCode(SC_OK);
+        Set<Person> people = personService.getAll();
+        assertThat("Looks like a person was not removed", people, not(hasItem(person)));
     }
 }
