@@ -19,5 +19,4 @@ insert into system_user (user_name, password, is_enabled, is_superuser) values (
 select @user_id := last_insert_id();
 insert into system_user_authority (permission, content_type, system_user_id) values
   ('DELETE', 'PERSON', @user_id),
-  ('DELETE', 'PROJECT', @user_id),
-  ('DELETE', 'MEMBERSHIP', @user_id);
+  ('DELETE', 'PROJECT', @user_id);

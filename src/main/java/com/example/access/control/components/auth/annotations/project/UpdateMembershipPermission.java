@@ -1,0 +1,10 @@
+package com.example.access.control.components.auth.annotations.project;
+
+import org.springframework.security.access.prepost.PreAuthorize;
+
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+@Retention(RetentionPolicy.RUNTIME)
+@PreAuthorize("hasPermission(null, 'Membership', T(com.example.access.control.components.auth.domain.Permission).UPDATE.getKey())")
+public @interface UpdateMembershipPermission {}
