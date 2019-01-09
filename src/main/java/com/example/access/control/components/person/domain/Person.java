@@ -1,6 +1,7 @@
 package com.example.access.control.components.person.domain;
 
 import com.example.access.control.components.project.domain.Membership;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -8,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
+import org.springframework.util.CollectionUtils;
 
 @Data
 @Entity
@@ -33,4 +35,9 @@ public class Person implements Serializable {
 
     @OneToMany(mappedBy = "person")
     private Set<Membership> participation;
+
+    @JsonIgnore
+    public boolean isBusy() {
+        return !CollectionUtils.isEmpty(participation);
+    }
 }
